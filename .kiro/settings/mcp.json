@@ -15,7 +15,8 @@
         "list_tables",
         "get_publishable_keys",
         "get_project_url",
-        "generate_typescript_types"
+        "generate_typescript_types",
+        "get_advisors"
       ]
     }
   }
