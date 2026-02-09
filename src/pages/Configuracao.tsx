@@ -12,9 +12,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Credentials {
   id?: number;
-  'ID do Pixel': string;
-  'Page_ID': string;
-  'Acess_Token': string;
+  pixel_id: string;
+  page_id: string;
+  access_token: string;
 }
 
 export default function Configuracao() {
@@ -22,9 +22,9 @@ export default function Configuracao() {
   const { toast } = useToast();
   
   const [credentials, setCredentials] = useState<Credentials>({
-    'ID do Pixel': '',
-    'Page_ID': '',
-    'Acess_Token': '',
+    pixel_id: '',
+    page_id: '',
+    access_token: '',
   });
   const [showToken, setShowToken] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -40,21 +40,21 @@ export default function Configuracao() {
 
   const fetchCredentials = async () => {
     try {
-      // Buscar credenciais da tabela Credenciais (pegar o primeiro registro)
+      // Buscar credenciais da tabela credenciais (pegar o primeiro registro)
       const { data, error } = await supabase
-        .from('Credenciais')
+        .from('credenciais')
         .select('*')
         .limit(1)
         .single();
 
       if (data) {
         setCredentials({
-          'ID do Pixel': data['ID do Pixel']?.toString() || '',
-          'Page_ID': data['Page_ID']?.toString() || '',
-          'Acess_Token': data['Acess_Token'] || '',
+          pixel_id: data.pixel_id?.toString() || '',
+          page_id: data.page_id?.toString() || '',
+          access_token: data.access_token || '',
         });
-        setWebhookUrl(data['Webhook'] || '');
-        setLinkInstrucao(data['Link_Instrucao'] || '');
+        setWebhookUrl(data.webhook || '');
+        setLinkInstrucao(data.link_instrucao || '');
         setCredentialsId(data.id);
       }
     } catch (error: any) {
@@ -63,7 +63,7 @@ export default function Configuracao() {
   };
 
   const handleSave = async () => {
-    if (!credentials['ID do Pixel'] || !credentials['Acess_Token']) {
+    if (!credentials.pixel_id || !credentials.access_token) {
       toast({
         title: 'Campos obrigatórios',
         description: 'Pixel ID e Access Token são obrigatórios.',
@@ -77,11 +77,11 @@ export default function Configuracao() {
       if (credentialsId) {
         // Atualizar credenciais existentes
         const { error } = await supabase
-          .from('Credenciais')
+          .from('credenciais')
           .update({
-            'ID do Pixel': parseFloat(credentials['ID do Pixel']),
-            'Page_ID': credentials['Page_ID'] ? parseFloat(credentials['Page_ID']) : null,
-            'Acess_Token': credentials['Acess_Token'],
+            pixel_id: parseFloat(credentials.pixel_id),
+            page_id: credentials.page_id ? parseFloat(credentials.page_id) : null,
+            access_token: credentials.access_token,
           })
           .eq('id', credentialsId);
 
@@ -89,11 +89,11 @@ export default function Configuracao() {
       } else {
         // Inserir novas credenciais
         const { data, error } = await supabase
-          .from('Credenciais')
+          .from('credenciais')
           .insert({
-            'ID do Pixel': parseFloat(credentials['ID do Pixel']),
-            'Page_ID': credentials['Page_ID'] ? parseFloat(credentials['Page_ID']) : null,
-            'Acess_Token': credentials['Acess_Token'],
+            pixel_id: parseFloat(credentials.pixel_id),
+            page_id: credentials.page_id ? parseFloat(credentials.page_id) : null,
+            access_token: credentials.access_token,
           })
           .select()
           .single();
@@ -118,8 +118,8 @@ export default function Configuracao() {
   };
 
   const copyAccessToken = () => {
-    if (credentials['Acess_Token']) {
-      navigator.clipboard.writeText(credentials['Acess_Token']);
+    if (credentials.access_token) {
+      navigator.clipboard.writeText(credentials.access_token);
       setCopiedToken(true);
       setTimeout(() => setCopiedToken(false), 2000);
       toast({
@@ -170,8 +170,8 @@ export default function Configuracao() {
               <Input
                 id="pixel_id"
                 placeholder="Ex: 123456789012345"
-                value={credentials['ID do Pixel']}
-                onChange={(e) => setCredentials({ ...credentials, 'ID do Pixel': e.target.value })}
+                value={credentials.pixel_id}
+                onChange={(e) => setCredentials({ ...credentials, pixel_id: e.target.value })}
               />
             </div>
 
@@ -180,8 +180,8 @@ export default function Configuracao() {
               <Input
                 id="page_id"
                 placeholder="Ex: 123456789012345"
-                value={credentials['Page_ID']}
-                onChange={(e) => setCredentials({ ...credentials, 'Page_ID': e.target.value })}
+                value={credentials.page_id}
+                onChange={(e) => setCredentials({ ...credentials, page_id: e.target.value })}
               />
             </div>
 
@@ -193,8 +193,8 @@ export default function Configuracao() {
                     id="access_token"
                     type={showToken ? 'text' : 'password'}
                     placeholder="EAAxxxxxxxxxx..."
-                    value={credentials['Acess_Token']}
-                    onChange={(e) => setCredentials({ ...credentials, 'Acess_Token': e.target.value })}
+                    value={credentials.access_token}
+                    onChange={(e) => setCredentials({ ...credentials, access_token: e.target.value })}
                   />
                   <button
                     type="button"
@@ -207,7 +207,7 @@ export default function Configuracao() {
                 <Button 
                   variant="outline" 
                   onClick={copyAccessToken}
-                  disabled={!credentials['Acess_Token']}
+                  disabled={!credentials.access_token}
                   className="shrink-0"
                 >
                   {copiedToken ? (

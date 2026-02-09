@@ -86,16 +86,16 @@ export default function Dashboard() {
     try {
       const { startDate, endDate } = getDateRange();
 
-      // Fetch leads count from "Eventos de Lead"
+      // Fetch leads count from "eventos_lead"
       const { count: leadsCount } = await supabase
-        .from('Eventos de Lead')
+        .from('eventos_lead')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString());
 
-      // Fetch conversions count from "Purchase Events"
+      // Fetch conversions count from "purchase_events"
       const { count: conversionsCount } = await supabase
-        .from('Purchase Events')
+        .from('purchase_events')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', startDate.toISOString())
         .lte('created_at', endDate.toISOString());
@@ -107,12 +107,12 @@ export default function Dashboard() {
 
       // Check if credentials are configured
       const { data: credentials } = await supabase
-        .from('Credenciais')
+        .from('credenciais')
         .select('*')
         .limit(1)
         .single();
 
-      setHasCredentials(!!(credentials && credentials['ID do Pixel'] && credentials['Acess_Token']));
+      setHasCredentials(!!(credentials && credentials.pixel_id && credentials.access_token));
       setLastUpdate(new Date());
     } catch (error) {
       console.error('Error fetching event counts:', error);
@@ -299,14 +299,14 @@ function RecentEvents({ dateFilter, customDateFrom, customDateTo }: {
       try {
         // Buscar eventos de lead
         const { data: leadEvents } = await supabase
-          .from('Eventos de Lead')
+          .from('eventos_lead')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(100);
 
         // Buscar eventos de purchase
         const { data: purchaseEvents } = await supabase
-          .from('Purchase Events')
+          .from('purchase_events')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(100);
@@ -404,26 +404,26 @@ function RecentEvents({ dateFilter, customDateFrom, customDateTo }: {
                 <>
                   <div>
                     <span className="text-muted-foreground">Telefone: </span>
-                    <span>{event.Numero || 'N/A'}</span>
+                    <span>{event.numero || 'N/A'}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Pixel ID: </span>
-                    <span>{event['Pixel ID'] || 'N/A'}</span>
+                    <span>{event.pixel_id || 'N/A'}</span>
                   </div>
                   <div className="col-span-2">
                     <span className="text-muted-foreground">CTWaclid: </span>
-                    <span className="font-mono text-xs">{event.CTWaclid || 'N/A'}</span>
+                    <span className="font-mono text-xs">{event.ctw_acl_id || 'N/A'}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div>
                     <span className="text-muted-foreground">Cliente: </span>
-                    <span>{event.Cliente_Name || 'N/A'}</span>
+                    <span>{event.cliente_name || 'N/A'}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Pixel ID: </span>
-                    <span>{event['ID do pixel'] || 'N/A'}</span>
+                    <span>{event.pixel_id || 'N/A'}</span>
                   </div>
                   <div className="col-span-2">
                     <span className="text-muted-foreground">FB Trace: </span>
